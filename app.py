@@ -12,7 +12,7 @@ st.set_page_config(page_title="Tariff Chatbot", layout="wide")
 st.title("📄 Tariff Chatbot")
 
 # Set your API key (you can also use st.secrets or environment variables securely)
-openai_api_key = st.text_input("Enter your OpenAI API key", type="password")
+openai_api_key = "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"
 
 # Set the path to your static PDF file stored in the 'data' folder of your repo
 pdf_path = "finalCopy.pdf"  # Update this to your file's location
