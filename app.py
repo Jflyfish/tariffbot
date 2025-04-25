@@ -1,4 +1,3 @@
-pip install streamlit langchain openai faiss-cpu unstructured pypdf tiktoken
 
 import streamlit as st
 from langchain.document_loaders import PyPDFLoader
@@ -7,7 +6,6 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
-import tempfile
 import os
 
 st.set_page_config(page_title="Tariff Chatbot", layout="wide")
@@ -16,17 +14,13 @@ st.title("📄 Tariff Chatbot")
 # Set your API key (you can also use st.secrets or environment variables securely)
 openai_api_key = st.text_input("Enter your OpenAI API key", type="password")
 
-uploaded_file = st.file_uploader("Upload your Tariff PDF", type="pdf")
+# Set the path to your static PDF file stored in the 'data' folder of your repo
+pdf_path = "finalCopy.pdf"  # Update this to your file's location
 
-if uploaded_file and openai_api_key:
+if os.path.exists(pdf_path) and openai_api_key:
     with st.spinner("Processing document..."):
-        # Save PDF to temp file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(uploaded_file.read())
-            tmp_path = tmp.name
-
         # Load & chunk document
-        loader = PyPDFLoader(tmp_path)
+        loader = PyPDFLoader(pdf_path)  # Directly load from static PDF
         pages = loader.load()
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         docs = splitter.split_documents(pages)
@@ -54,3 +48,5 @@ if uploaded_file and openai_api_key:
             with st.expander("Show source document chunks"):
                 for doc in result["source_documents"]:
                     st.markdown(f"**Page snippet:**\n{doc.page_content}")
+else:
+    st.warning(f"PDF not found at {pdf_path}. Make sure it's in the repo and the path is correct.")
